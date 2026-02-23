@@ -5,6 +5,7 @@ import CartSidebar from './components/CartSidebar';
 import Home from './pages/Home';
 import Category from './pages/Category';
 import Cart from './pages/Cart';
+import ProductDetails from './pages/ProductDetails';
 import { useCart } from './context/CartContext';
 import './styles/App.css';
 
@@ -28,6 +29,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home searchTerm={searchTerm} />} />
           <Route path="/category/:categoryName" element={<Category />} />
+          <Route path="/product/:id" element={<ProductDetails />} />
           <Route path="/cart" element={<Cart />} />
           <Route path="*" element={<div className="container"><h2>404 - Page Not Found</h2></div>} />
         </Routes>

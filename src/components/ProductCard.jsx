@@ -1,5 +1,6 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import '../styles/ProductCard.css';
 
@@ -8,9 +9,13 @@ const ProductCard = ({ product }) => {
 
   return (
     <div className="product-card">
-      <img src={product.image} alt={product.name} className="product-image" />
+      <Link to={`/product/${product.id}`} className="product-link">
+        <img src={product.image} alt={product.name} className="product-image" />
+      </Link>
       <div className="product-info">
-        <h3 className="product-name">{product.name}</h3>
+        <Link to={`/product/${product.id}`} className="product-name-link">
+          <h3 className="product-name">{product.name}</h3>
+        </Link>
         <p className="product-price">${product.price}</p>
         <p className="product-category">{product.category}</p>
         <p className="product-description">{product.description}</p>
