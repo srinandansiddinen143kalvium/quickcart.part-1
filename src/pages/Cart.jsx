@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
+import { products } from '../data/products'; // Import full product list
 import { Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import '../styles/CartSidebar.css'; // Reusing styles where possible
@@ -15,31 +16,35 @@ const Cart = () => {
       return;
     }
 
-    // Flatten items as per user request: item 1, item 2...
-    const flattenedData = {};
-    cartItems.forEach((item, index) => {
-      const i = index + 1;
-      flattenedData[`item_${i}_name`] = item.name;
-      flattenedData[`item_${i}_qty`] = item.quantity;
-      flattenedData[`item_${i}_price`] = item.price;
-    });
-
-    // Construct URL parameters
+    // Construct URL parameters with ALL products flattened
     const params = new URLSearchParams();
     params.append('hostel', hostel);
     params.append('room', room);
     params.append('total', cartTotal.toFixed(2));
     
-    // Append flattened items
-    Object.keys(flattenedData).forEach(key => {
-      params.append(key, flattenedData[key]);
+    // Iterate through ALL available products
+    products.forEach((product) => {
+      // Check if this product is in the cart
+      const cartItem = cartItems.find(item => item.id === product.id);
+      const qty = cartItem ? cartItem.quantity : 0;
+      
+      // Append directly using product name as key
+      params.append(product.name, qty);
     });
 
     // "Send to URL" - simulating by logging and alert
-    const checkoutUrl = `https://example.com/checkout?${params.toString()}`;
-    console.log("Checkout URL:", checkoutUrl);
-    alert(`Checkout data prepared!\nURL: ${checkoutUrl}`);
-    // window.location.href = checkoutUrl; // Uncomment to actually redirect
+    const checkoutUrl = `https://wa.me/919999999999?text=${encodeURIComponent(`New Order:\nHostel: ${hostel}\nRoom: ${room}\n\nItems:\n${products.map(p => {
+        const item = cartItems.find(i => i.id === p.id);
+        const q = item ? item.quantity : 0;
+        return `${p.name}: ${q}`;
+    }).join('\n')}\n\nTotal: $${cartTotal.toFixed(2)}`)}`;
+
+    // Or just the raw params URL as requested:
+    const rawUrl = `https://example.com/checkout?${params.toString()}`;
+    
+    console.log("Checkout URL:", rawUrl);
+    alert(`Checkout data prepared!\nURL: ${rawUrl}`);
+    // window.location.href = rawUrl; // Uncomment to actually redirect
   };
 
   if (cartItems.length === 0) {
