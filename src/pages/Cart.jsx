@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../context/CartContext';
 import { Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -6,6 +6,41 @@ import '../styles/CartSidebar.css'; // Reusing styles where possible
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart();
+  const [hostel, setHostel] = useState('');
+  const [room, setRoom] = useState('');
+
+  const handleCheckout = () => {
+    if (!hostel || !room) {
+      alert("Please enter Hostel and Room number.");
+      return;
+    }
+
+    // Flatten items as per user request: item 1, item 2...
+    const flattenedData = {};
+    cartItems.forEach((item, index) => {
+      const i = index + 1;
+      flattenedData[`item_${i}_name`] = item.name;
+      flattenedData[`item_${i}_qty`] = item.quantity;
+      flattenedData[`item_${i}_price`] = item.price;
+    });
+
+    // Construct URL parameters
+    const params = new URLSearchParams();
+    params.append('hostel', hostel);
+    params.append('room', room);
+    params.append('total', cartTotal.toFixed(2));
+    
+    // Append flattened items
+    Object.keys(flattenedData).forEach(key => {
+      params.append(key, flattenedData[key]);
+    });
+
+    // "Send to URL" - simulating by logging and alert
+    const checkoutUrl = `https://example.com/checkout?${params.toString()}`;
+    console.log("Checkout URL:", checkoutUrl);
+    alert(`Checkout data prepared!\nURL: ${checkoutUrl}`);
+    // window.location.href = checkoutUrl; // Uncomment to actually redirect
+  };
 
   if (cartItems.length === 0) {
     return (
@@ -62,6 +97,31 @@ const Cart = () => {
         </div>
 
         <div className="cart-summary">
+          <h3>Order Details</h3>
+          
+          <div className="checkout-inputs">
+            <div className="input-group">
+              <label htmlFor="hostel">Hostel</label>
+              <input 
+                type="text" 
+                id="hostel" 
+                value={hostel} 
+                onChange={(e) => setHostel(e.target.value)} 
+                placeholder="e.g. Ganga-A"
+              />
+            </div>
+            <div className="input-group">
+              <label htmlFor="room">Room Number</label>
+              <input 
+                type="text" 
+                id="room" 
+                value={room} 
+                onChange={(e) => setRoom(e.target.value)} 
+                placeholder="e.g. 347"
+              />
+            </div>
+          </div>
+
           <h3>Order Summary</h3>
           <div className="summary-row">
             <span>Subtotal</span>
@@ -75,7 +135,7 @@ const Cart = () => {
             <span>Total</span>
             <span>${cartTotal.toFixed(2)}</span>
           </div>
-          <button className="checkout-btn">Proceed to Checkout</button>
+          <button className="checkout-btn" onClick={handleCheckout}>Proceed to Checkout</button>
           <button className="clear-cart-btn" onClick={clearCart}>Clear Cart</button>
         </div>
       </div>
