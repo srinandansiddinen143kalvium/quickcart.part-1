@@ -1,8 +1,11 @@
 import React from 'react';
 import { Plus } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 import '../styles/ProductCard.css';
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = ({ product }) => {
+  const { addToCart } = useCart();
+
   return (
     <div className="product-card">
       <img src={product.image} alt={product.name} className="product-image" />
@@ -13,7 +16,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <p className="product-description">{product.description}</p>
         <button 
           className="add-to-cart-btn" 
-          onClick={() => onAddToCart(product)}
+          onClick={() => addToCart(product)}
         >
           <Plus size={18} /> Add to Cart
         </button>
